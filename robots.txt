@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# The support page is a redirect shim, no content worth indexing.
+Disallow: /support.html
+
+Sitemap: https://irezsolutions.com/sitemap.xml

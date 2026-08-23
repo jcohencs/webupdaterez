@@ -1,0 +1,50 @@
+# iRez Solutions - Netlify configuration
+
+[build]
+  publish = "."
+  # No build step: the site is plain static HTML, so no command is set.
+
+# Asset optimization is DISABLED on purpose.
+# index.html is a single ~1MB file with all CSS and JS inline plus base64
+# images. Netlify's minifier/bundler has a habit of mangling inline blocks
+# like that, which produces a site that looks fine locally and broken live.
+# Do not turn these on without testing a deploy preview first.
+[build.processing.css]
+  bundle = false
+  minify = false
+[build.processing.js]
+  bundle = false
+  minify = false
+[build.processing.html]
+  pretty_urls = true
+[build.processing.images]
+  compress = false
+
+# Security headers. Worth having on any site, and more so for a company
+# that sells access control and network security.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    # CSP allows Google Fonts and inline styles/scripts, which this site needs.
+    # 'unsafe-inline' is required because all CSS and JS live in the HTML.
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'"
+
+# Long cache for fingerprint-free static assets you may add later.
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# HTML should always revalidate so edits go live immediately.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
